@@ -13,6 +13,31 @@
   }
 }
 
+.toppart {
+    padding: 20px;
+}
+
+footer {
+    width: 100%;
+    padding: 20px;
+    background: #f6f6f7;
+}
+
+.country {
+    width: 400px;
+    max-width: 100%;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all ease-in-out 0.2s;
+}
+
+.country:hover {
+    border-bottom-color: blue;
+    color: blue;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
