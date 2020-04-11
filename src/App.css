@@ -6,8 +6,21 @@
     padding: 20px;
 }
 
+@keyframes FadeIn {
+    0%, 20% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: FadeIn 1.4s;
+}
+
 footer {
-    width: 100%;
+    width: calc(100%-40px);
     padding: 20px;
     background: #f6f6f7;
 }

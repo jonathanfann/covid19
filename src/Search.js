@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useParams
-} from 'react-router-dom';
+import moment from 'moment';
+import NumberFormat from 'react-number-format';
 
 class SearchComponent extends React.Component {
     constructor(props) {
@@ -18,11 +13,6 @@ class SearchComponent extends React.Component {
         };
     }
 
-    // getRoutePath() {
-    //     const country = useParams();
-    //     return country ? country : null;
-    // }
-
     componentDidMount() {
         fetch("https://pomber.github.io/covid19/timeseries.json")
             .then(res => res.json())
@@ -31,8 +21,12 @@ class SearchComponent extends React.Component {
                     this.setState({
                         isLoaded: true,
                         data: data,
-                        country: window.location.pathname.split('/')[1],
                     });
+                    if (window.location.pathname.split('/')[1]) {
+                        this.setState({
+                            country: window.location.pathname.split('/')[1].split('%20').join(' ')
+                        })
+                    }
                 },
                 // Note: it's important to handle errors here
                 // instead of a catch() block so that we don't swallow
@@ -47,9 +41,14 @@ class SearchComponent extends React.Component {
     }
 
     selectedCountry(country) {
-        this.setState({
-            country: country
-        });
+        // this.setState({
+        //     country: country
+        // });
+        if (country) {
+            window.location.href = '/' + country;
+        } else {
+            window.location.href = '/';
+        }
     }
 
     render() {
@@ -59,38 +58,27 @@ class SearchComponent extends React.Component {
             data,
             country
         } = this.state;
-        let countryDataTotal = null;
-        let view = Object.keys(data).map((k, v) => (
+        const countries = Object.keys(data).map((k, v) => (
             <div className="country"
                 key={k}
                 onClick={() => this.selectedCountry(k)}
             >{k}</div>
         ));
-        if (error) {
-            view = <div>Error: {error.message} </div>;
-        } else if (!isLoaded) {
-            view = <div> Loading... </div>;
-        }
         if (country) {
-            const countryData = [<thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead>];
-            data[country].forEach(({ date, confirmed, recovered, deaths }) =>
-              countryData.push(<tr key={date}><td>{date}</td><td>{confirmed}</td><td>{recovered}</td><td>{deaths}</td></tr>)
+            const arrCountry = data[country].reverse();
+            const countryData = [];
+            arrCountry.forEach(({ date, confirmed, recovered, deaths }) =>
+                countryData.push(<tr key={date}><td>{moment(date).format('LL')}</td><td><strong><NumberFormat value={confirmed} thousandSeparator={true} displayType={'text'} /></strong></td><td><span className="text-success"><NumberFormat value={recovered} thousandSeparator={true} displayType={'text'} /></span></td><td><span className="text-danger"><NumberFormat value={deaths} thousandSeparator={true} displayType={'text'} /></span></td></tr>)
             );
-            let countryDataTotal = <div><h2>{country}</h2><button onClick={() => this.selectedCountry()}>Back</button><table>{countryData}</table></div>;
+            return <div><div><button className="btn btn-primary btn-sm" onClick={() => this.selectedCountry()}>&larr; Back</button></div><hr /><h2>{country}</h2><table className="table"><thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead><tbody>{countryData}</tbody></table></div>;
         }
-        const page = (
-            <Router>
-                <Switch>
-                  <Route path="/:name">
-                    {countryDataTotal}
-                  </Route>
-                  <Route path="/">
-                    {view}
-                  </Route>
-                </Switch>
-            </Router>
-        );
-        return page;
+        if (error) {
+            return <div>Error: {error.message} </div>;
+        } else if (!isLoaded) {
+            return <div> Loading... </div>;
+        } else {
+            return (countries);
+        }
     }
 }
 
