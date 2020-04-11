@@ -72,7 +72,8 @@ class SearchComponent extends React.Component {
             const arrCountry = data[country].reverse();
             const countryData = [];
             arrCountry.forEach(({ date, confirmed, recovered, deaths }) =>
-                countryData.push(<tr key={date}><td>{moment(date).format('LL')}</td><td><strong><NumberFormat value={confirmed} thousandSeparator={true} displayType={'text'} /></strong></td><td><span className="text-success"><NumberFormat value={recovered} thousandSeparator={true} displayType={'text'} /></span></td><td><span className="text-danger"><NumberFormat value={deaths} thousandSeparator={true} displayType={'text'} /></span></td></tr>)
+                // handle safari wack date bug
+                countryData.push(<tr key={date}><td>{moment(date).isValid() ? moment(date).format('LL') : date}</td><td><strong><NumberFormat value={confirmed} thousandSeparator={true} displayType={'text'} /></strong></td><td><span className="text-success"><NumberFormat value={recovered} thousandSeparator={true} displayType={'text'} /></span></td><td><span className="text-danger"><NumberFormat value={deaths} thousandSeparator={true} displayType={'text'} /></span></td></tr>)
             );
             return <div><div><button className="btn btn-primary btn-sm" onClick={() => this.selectedCountry()}>All Countries</button></div><hr /><h2>{country}</h2><table className="table"><thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead><tbody>{countryData}</tbody></table></div>;
         }
