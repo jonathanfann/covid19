@@ -22,11 +22,15 @@ class SearchComponent extends React.Component {
                         isLoaded: true,
                         data: data,
                     });
-                    if (window.location.pathname.split('/')[1]) {
-                        this.setState({
-                            country: window.location.pathname.split('/')[1].split('%20').join(' ')
-                        })
-                    }
+                    // if (window.location.pathname.split('/')[1]) {
+                    //     this.setState({
+                    //         country: window.location.pathname.split('/')[1].split('%20').join(' ')
+                    //     })
+                    // }
+                    // for now default to us
+                    this.setState({
+                        country: 'US'
+                    });
                 },
                 // Note: it's important to handle errors here
                 // instead of a catch() block so that we don't swallow
@@ -41,14 +45,14 @@ class SearchComponent extends React.Component {
     }
 
     selectedCountry(country) {
-        // this.setState({
-        //     country: country
-        // });
-        if (country) {
-            window.location.href = '/' + country;
-        } else {
-            window.location.href = '/';
-        }
+        this.setState({
+            country: country
+        });
+        // if (country) {
+        //     window.location.href = '/' + country;
+        // } else {
+        //     window.location.href = '/';
+        // }
     }
 
     render() {
@@ -70,7 +74,7 @@ class SearchComponent extends React.Component {
             arrCountry.forEach(({ date, confirmed, recovered, deaths }) =>
                 countryData.push(<tr key={date}><td>{moment(date).format('LL')}</td><td><strong><NumberFormat value={confirmed} thousandSeparator={true} displayType={'text'} /></strong></td><td><span className="text-success"><NumberFormat value={recovered} thousandSeparator={true} displayType={'text'} /></span></td><td><span className="text-danger"><NumberFormat value={deaths} thousandSeparator={true} displayType={'text'} /></span></td></tr>)
             );
-            return <div><div><button className="btn btn-primary btn-sm" onClick={() => this.selectedCountry()}>&larr; Back</button></div><hr /><h2>{country}</h2><table className="table"><thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead><tbody>{countryData}</tbody></table></div>;
+            return <div><div><button className="btn btn-primary btn-sm" onClick={() => this.selectedCountry()}>All Countries</button></div><hr /><h2>{country}</h2><table className="table"><thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead><tbody>{countryData}</tbody></table></div>;
         }
         if (error) {
             return <div>Error: {error.message} </div>;
