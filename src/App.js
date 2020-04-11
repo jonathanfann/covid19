@@ -4,8 +4,8 @@ import './App.css';
 
 function App() {
   return (
-    <div class="container">
-        <div class="toppart">
+    <div className="container">
+        <div className="toppart">
             <h1>Covid19 Data</h1>
             <SearchComponent />
         </div>

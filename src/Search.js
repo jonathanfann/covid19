@@ -1,4 +1,11 @@
 import React from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from 'react-router-dom';
 
 class SearchComponent extends React.Component {
     constructor(props) {
@@ -11,6 +18,11 @@ class SearchComponent extends React.Component {
         };
     }
 
+    // getRoutePath() {
+    //     const country = useParams();
+    //     return country ? country : null;
+    // }
+
     componentDidMount() {
         fetch("https://pomber.github.io/covid19/timeseries.json")
             .then(res => res.json())
@@ -18,7 +30,8 @@ class SearchComponent extends React.Component {
                 (data) => {
                     this.setState({
                         isLoaded: true,
-                        data: data
+                        data: data,
+                        country: window.location.pathname.split('/')[1],
                     });
                 },
                 // Note: it's important to handle errors here
@@ -36,7 +49,7 @@ class SearchComponent extends React.Component {
     selectedCountry(country) {
         this.setState({
             country: country
-        })
+        });
     }
 
     render() {
@@ -46,29 +59,38 @@ class SearchComponent extends React.Component {
             data,
             country
         } = this.state;
-        const countries = Object.keys(data).map((k, v) => (
+        let countryDataTotal = null;
+        let view = Object.keys(data).map((k, v) => (
             <div className="country"
                 key={k}
                 onClick={() => this.selectedCountry(k)}
             >{k}</div>
         ));
-        if (country) {
-            const countryData = [<thead><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead>];
-            data[country].forEach(({ date, confirmed, recovered, deaths }) =>
-              countryData.push(<tr><td>{date}</td><td>{confirmed}</td><td>{recovered}</td><td>{deaths}</td></tr>)
-            );
-            return <div><button onClick={() => this.selectedCountry()}>Back</button><table>{countryData}</table></div>;
-        }
         if (error) {
-            return <div>Error: {error.message} </div>;
+            view = <div>Error: {error.message} </div>;
         } else if (!isLoaded) {
-            return <div> Loading... </div>;
-        } else {
-            return (countries
-                // this.state.items ? this.state.items : 'Nothing To Show'
-                // data ? data : 'Nothing to show'
-            );
+            view = <div> Loading... </div>;
         }
+        if (country) {
+            const countryData = [<thead key="head"><tr><th>Date</th><th>Confirmed</th><th>Recovered</th><th>Deaths</th></tr></thead>];
+            data[country].forEach(({ date, confirmed, recovered, deaths }) =>
+              countryData.push(<tr key={date}><td>{date}</td><td>{confirmed}</td><td>{recovered}</td><td>{deaths}</td></tr>)
+            );
+            let countryDataTotal = <div><h2>{country}</h2><button onClick={() => this.selectedCountry()}>Back</button><table>{countryData}</table></div>;
+        }
+        const page = (
+            <Router>
+                <Switch>
+                  <Route path="/:name">
+                    {countryDataTotal}
+                  </Route>
+                  <Route path="/">
+                    {view}
+                  </Route>
+                </Switch>
+            </Router>
+        );
+        return page;
     }
 }
 
