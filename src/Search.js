@@ -69,9 +69,8 @@ class SearchComponent extends React.Component {
             >{k}</div>
         ));
         if (country) {
-            const arrCountry = data[country].reverse();
             const countryData = [];
-            arrCountry.forEach(({ date, confirmed, recovered, deaths }) =>
+            data[country].reverse().forEach(({ date, confirmed, recovered, deaths }) =>
                 // handle safari wack date bug
                 countryData.push(<tr key={date}><td>{moment(date).isValid() ? moment(date).format('LL') : date}</td><td><strong><NumberFormat value={confirmed} thousandSeparator={true} displayType={'text'} /></strong></td><td><span className="text-success"><NumberFormat value={recovered} thousandSeparator={true} displayType={'text'} /></span></td><td><span className="text-danger"><NumberFormat value={deaths} thousandSeparator={true} displayType={'text'} /></span></td></tr>)
             );
